@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon2Qc - View Terminal</title>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f5f5f5; font-family: Arial, sans-serif; min-height: 100vh;">
+    
+    <!-- Header with Logo and Back Button -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; padding: 0 20px;">
+        <!-- Logo -->
+        <a href="index.html" style="text-decoration: none;">
+            <div style="display: flex; align-items: center;">
+                <!-- Circular logo -->
+                <div style="width: 60px; height: 60px; background-color: #2d7d32; border-radius: 50%; position: relative; margin-right: 15px; display: flex; align-items: center; justify-content: center;">
+                    <!-- Road design -->
+                    <div style="width: 35px; height: 30px; position: relative;">
+                        <div style="width: 25px; height: 20px; background-color: #1976d2; border-radius: 0 0 12px 12px; position: relative; transform: rotate(-5deg);">
+                            <div style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 1px; height: 4px; background-color: white;"></div>
+                            <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 1px; height: 4px; background-color: white;"></div>
+                        </div>
+                        <div style="position: absolute; top: 5px; right: 2px; width: 12px; height: 15px; background-color: white; border-radius: 8px; transform: rotate(15deg);"></div>
+                    </div>
+                </div>
+                
+                <!-- Text -->
+                <div>
+                    <div style="font-size: 32px; font-weight: bold; color: #1976d2; line-height: 1; margin-bottom: 2px;">Mon2Qc</div>
+                    <div style="font-size: 12px; color: #2d7d32; font-weight: 600;">Montalban To Quezon City</div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Back Button -->
+        <a href="index.html" style="text-decoration: none;">
+            <div style="background-color: #2d7d32; color: white; padding: 10px 20px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#1b5e20'" onmouseout="this.style.backgroundColor='#2d7d32'">
+                ← Back to Home
+            </div>
+        </a>
+    </div>
+    
+    <!-- Page Title -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 36px; color: #2d7d32; font-weight: bold; margin: 0;">View Terminal</h1>
+    </div>
+    
+    <!-- Terminal Cards Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        
+        <!-- Montalban Market Terminal -->
+       <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+    <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Montalban Market Terminal</h3>
+    <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Near Montalban Public Market, Brgy. San Mateo, Rodriguez, Rizal</p>
+    <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Montalban Public Market, Rodriguez Municipal Hall</p>
+
+    <!-- Embedded Google Street View -->
+    <div style="margin-top: 15px;">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!4v1749685167017!6m8!1m7!1sIdTe8hWwuOUmyq0dnx2vyQ!2m2!1d14.7296666390599!2d121.1400781653784!3f54.55631751185044!4f-0.3278058941530162!5f0.7820865974627469" 
+            width="100%" 
+            height="300" 
+            style="border:0; border-radius: 10px;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+</div>
+
+        
+        <!-- Quezon Avenue Bus Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Quezon Avenue Bus Terminal</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Quezon Avenue, Quezon City, near Kamuning MRT Station</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Quezon Avenue MRT Station, Kamuning Market</p>
+        </div>
+        
+        <!-- Montalban Bus Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Montalban Bus Terminal</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Along Montalban Market Road, Brgy. San Mateo, Rodriguez, Rizal</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Near Montalban Public Market, Town Hall</p>
+        </div>
+        
+        <!-- Empty Card -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+        </div>
+        
+        <!-- Litex/Commonwealth Jeepney Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Litex / Commonwealth Jeepney Terminal (QC)</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Corner of Litex Road and Commonwealth Avenue, Quezon City</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Litex Market, Commonwealth</p>
+        </div>
+        
+        <!-- Montalban Town Centre Jeepney Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Montalban Town Centre Jeepney Terminal</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Montalban Town Centre Mall, Brgy. San Jose, Rodriguez, Rizal</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Montalban Town Centre Mall, St. Joseph Parish Church</p>
+        </div>
+        
+        <!-- IBP Road/Commonwealth Ave Jeepney Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">IBP Road / Commonwealth Ave Jeepney Terminal (QC)</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Along IBP Road, near Commonwealth Avenue, Quezon City</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Commonwealth Market</p>
+        </div>
+        
+        <!-- Montalban Town Centre UV Express Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Montalban Town Centre UV Express Terminal</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Luvers, Brgy. San Rafael</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Eastwood entrance circle, near centella homes</p>
+        </div>
+        
+        <!-- Gateway Mall UV Express Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Gateway Mall UV Express Terminal (Cubao)</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> Gateway Mall Parking Area, Araneta Center, Cubao, Quezon City</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> Gateway Mall, Araneta Coliseum</p>
+        </div>
+        
+        <!-- SM North EDSA UV Express Terminal -->
+        <div style="background-color: white; border: 2px solid #666; border-radius: 15px; padding: 20px; min-height: 120px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <h3 style="font-size: 16px; font-weight: bold; color: #333; margin: 0 0 10px 0;">SM North EDSA UV Express Terminal</h3>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Address:</strong> SM North EDSA Parking Area, Quezon City</p>
+            <p style="margin: 5px 0; font-size: 14px; color: #333;"><strong>Landmarks:</strong> SM North EDSA Mall, Trinoma Mall (nearby)</p>
+        </div>
+        
+    </div>
+    
+</body>
+</html>
