@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon2Qc - Montalban To Quezon City</title>
 </head>
-<body style="margin: 0; padding: 40px; background-color: #f5f5f5; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
+<body style="margin: 0; padding: 40px; background-color: #f5f5f5; font-family: Poppins, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
     
     <!-- Logo Section -->
     <div style="text-align: center; margin-bottom: 60px;">
@@ -55,8 +57,9 @@
                         <div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 35px; height: 3px; background-color: #2d7d32;"></div>
                     </div>
                 </div>
-                            <a href="{% url 'terminal' %}" style="text-decoration: none;">
+                            
                     <div style="font-size: 18px; font-weight: 600; color: #2d7d32;">
+                        <a href="{% url 'terminal' %}" style="text-decoration: none;">
                         View Terminal
                     </div>
                 </a>
@@ -85,6 +88,7 @@
                 </div>
             </div>
             <div style="font-size: 18px; font-weight: 600; color: #2d7d32;">
+                <a href="{% url 'traffic' %}" style="text-decoration: none;">
                 Traffic
             </div>
         </div>
@@ -92,6 +96,7 @@
         <!-- Routes Card -->
         <div style="width: 200px; height: 140px; background-color: white; border: 2px solid #666; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='white'">
             <div style="font-size: 18px; font-weight: 600; color: #2d7d32;">
+              <a href="{% url 'routes' %}" style="text-decoration: none;">
                 Routes
             </div>
         </div>

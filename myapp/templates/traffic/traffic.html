@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fastest Route Traffic Map - Montalban Routes</title>
+
+<!-- Google Fonts Poppins -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+  rel="stylesheet"
+/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Leaflet CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 20px auto;
+    max-width: 900px;
+    background: #f7f9fc;
+    color: #333;
+    user-select: none;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #222;
+  }
+  #map {
+    height: 480px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: box-shadow 0.3s ease;
+  }
+  #map:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+  .info-box {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-size: 16px;
+    margin-bottom: 25px;
+    min-height: 160px;
+    transition: background-color 0.3s ease;
+  }
+  .route-summary {
+    margin-bottom: 18px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    cursor: default;
+  }
+  .route-summary.fastest {
+    background-color: #e6ffea;
+    border-left: 5px solid #28a745;
+  }
+  .route-summary:hover {
+    background-color: #f0f8ff;
+  }
+  .route-summary strong {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  #legend {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 25px;
+    user-select: none;
+  }
+  #legend span {
+    font-weight: 600;
+    margin-left: 10px;
+    margin-right: 15px;
+  }
+  #legend .low {
+    color: green;
+  }
+  #legend .moderate {
+    color: orange;
+  }
+  #legend .high {
+    color: red;
+  }
+  .loading-message {
+    font-style: italic;
+    color: #777;
+  }
+  /* Spinner */
+  .spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #28a745;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  /* Route selection buttons */
+  #route-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    user-select: none;
+  }
+  #route-buttons button {
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.05);
+  }
+  #route-buttons button:hover {
+    background-color: #f0f8ff;
+    border-color: #28a745;
+  }
+  #route-buttons button.active {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 10px rgb(40 167 69 / 0.5);
+  }
+  /* Delay gauge */
+  #delay-gauge {
+    width: 100%;
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #eee;
+    margin-top: 10px;
+    user-select: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  }
+  #delay-gauge-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #28a745;
+    transition: width 0.6s ease, background-color 0.6s ease;
+  }
+  #toggle-ai {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    gap: 8px;
+  }
+  #toggle-ai label {
+    font-weight: 600;
+    user-select: none;
+  }
+  #toggle-ai input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+</style>
+
+</head>
+<body>
+
+<h2>Fastest Traffic Route from Montalban</h2>
+
+<div id="route-buttons">
+  <!-- Buttons added dynamically -->
+</div>
+
+<div id="map"></div>
+
+<div id="legend">
+  <strong>Traffic Delay Indicator:</strong>
+  <span class="low">● Low Delay</span>
+  <span class="moderate">● Moderate Delay</span>
+  <span class="high">● High Delay</span>
+</div>
+
+<div id="toggle-ai">
+  <label for="ai-toggle">Show AI Predicted Delay:</label>
+  <input type="checkbox" id="ai-toggle" />
+</div>
+
+<div class="info-box" id="route-info">
+  Loading route information...
+  <div id="delay-gauge" title="Traffic Delay Gauge">
+    <div id="delay-gauge-bar"></div>
+  </div>
+</div>
+
+<script>
+  const apiKey = "lxPgf6GPTpSWaAO9RiYCZB8egvxGmVWj";
+
+  const routes = {
+    litex: {
+      start: [14.7471, 121.1631],
+      end: [14.7353, 121.1544],
+      label: "Montalban → Litex",
+      color: "blue",
+    },
+    cubao: {
+      start: [14.7471, 121.1631],
+      end: [14.6091, 121.0509],
+      label: "Montalban → Cubao",
+      color: "orange",
+    },
+    smnorth: {
+      start: [14.7471, 121.1631],
+      end: [14.6559, 121.0314],
+      label: "Montalban → SM North EDSA",
+      color: "purple",
+    }
+  };
+
+  const map = L.map('map').setView(routes.litex.start, 12);
+
+  L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/{z}/{x}/{y}.png?key=${apiKey}`, {
+    maxZoom: 19,
+    attribution: '&copy; TomTom & contributors'
+  }).addTo(map);
+
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}m ${sec}s`;
+  }
+
+  async function fetchRoute(start, end) {
+    const startStr = `${start[0]},${start[1]}`;
+    const endStr = `${end[0]},${end[1]}`;
+    const url = `https://api.tomtom.com/routing/1/calculateRoute/${startStr}:${endStr}/json?key=${apiKey}&traffic=true`;
+    const response = await fetch(url);
+    return await response.json();
+  }
+
+  // Simulated AI prediction model
+  function predictTrafficDelayAI(routeKey, currentHour) {
+    let baseDelay = 0;
+    if (currentHour >= 7 && currentHour <= 9) baseDelay = 300;
+    else if (currentHour >= 17 && currentHour <= 19) baseDelay = 400;
+    else baseDelay = 100;
+
+    const routeMultipliers = {
+      litex: 1.0,
+      cubao: 1.3,
+      smnorth: 1.1
+    };
+
+    return Math.floor(baseDelay * (routeMultipliers[routeKey] || 1));
+  }
+
+  const infoBox = document.getElementById('route-info');
+  const delayGaugeBar = document.getElementById('delay-gauge-bar');
+  const aiToggle = document.getElementById('ai-toggle');
+  const routeButtonsContainer = document.getElementById('route-buttons');
+
+  let routeLayers = {};
+  let currentRouteKey = null;
+  let routeSummaries = [];
+
+  // Create buttons for each route dynamically
+  Object.keys(routes).forEach(routeKey => {
+    const btn = document.createElement('button');
+    btn.textContent = routes[routeKey].label;
+    btn.dataset.routeKey = routeKey;
+    btn.addEventListener('click', () => {
+      highlightRoute(routeKey);
+    });
+    routeButtonsContainer.appendChild(btn);
+  });
+
+  function setActiveButton(routeKey) {
+    const buttons = routeButtonsContainer.querySelectorAll('button');
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.routeKey === routeKey);
+    });
+  }
+
+  function updateDelayGauge(delaySeconds) {
+    // Max delay threshold 600s (10min) for scaling
+    let percent = Math.min(100, (delaySeconds / 600) * 100);
+    delayGaugeBar.style.width = percent + '%';
+
+    if (percent < 33) delayGaugeBar.style.backgroundColor = '#28a745'; // green low
+    else if (percent < 66) delayGaugeBar.style.backgroundColor = '#ffae42'; // orange moderate
+    else delayGaugeBar.style.backgroundColor = '#e63946'; // red high
+  }
+
+  async function loadRoutes() {
+    infoBox.textContent = 'Loading routes...';
+    infoBox.appendChild(delayGaugeBar.parentElement);
+
+    for (const key of Object.keys(routes)) {
+      const route = routes[key];
+      try {
+        const data = await fetchRoute(route.start, route.end);
+
+        if (data.routes && data.routes.length > 0) {
+          const summary = data.routes[0].summary;
+          routeSummaries.push({
+            key,
+            label: route.label,
+            color: route.color,
+            summary,
+            polyline: data.routes[0].legs[0].points
+          });
+        } else {
+          console.error(`No route data for ${key}`);
+        }
+      } catch (err) {
+        console.error(`Error fetching route ${key}:`, err);
+      }
+    }
+
+    // Display route buttons and select fastest route by default
+    routeSummaries.sort((a,b) => a.summary.travelTimeInSeconds - b.summary.travelTimeInSeconds);
+
+    if (routeSummaries.length) {
+      highlightRoute(routeSummaries[0].key);
+    } else {
+      infoBox.textContent = 'Failed to load route data.';
+    }
+  }
+
+  function clearRouteLayers() {
+    Object.values(routeLayers).forEach(layer => {
+      map.removeLayer(layer);
+    });
+    routeLayers = {};
+  }
+
+  function highlightRoute(routeKey) {
+    setActiveButton(routeKey);
+    clearRouteLayers();
+
+    const selectedRoute = routeSummaries.find(r => r.key === routeKey);
+    if (!selectedRoute) return;
+
+    currentRouteKey = routeKey;
+
+    // Draw polyline for selected route
+    const latlngs = selectedRoute.polyline.map(p => [p.latitude, p.longitude]);
+    const polyline = L.polyline(latlngs, {
+      color: selectedRoute.color,
+      weight: 6,
+      opacity: 0.85,
+      dashArray: null,
+    }).addTo(map);
+
+    // Draw polylines for other routes as dashed lines with low opacity
+    routeSummaries.forEach(route => {
+      if (route.key !== routeKey) {
+        const latlngsOther = route.polyline.map(p => [p.latitude, p.longitude]);
+        const polylineOther = L.polyline(latlngsOther, {
+          color: route.color,
+          weight: 4,
+          opacity: 0.3,
+          dashArray: '6 8',
+        }).addTo(map);
+        routeLayers[route.key + "_other"] = polylineOther;
+      }
+    });
+
+    routeLayers[routeKey] = polyline;
+
+    // Center and zoom to route bounds
+    const bounds = polyline.getBounds();
+    map.fitBounds(bounds, {padding: [60, 60]});
+
+    // Show route summary with delay info
+    showRouteInfo(selectedRoute);
+  }
+
+  function showRouteInfo(route) {
+    const { travelTimeInSeconds, trafficDelayInSeconds, lengthInMeters } = route.summary;
+
+    const currentHour = new Date().getHours();
+    const aiDelay = predictTrafficDelayAI(route.key, currentHour);
+
+    // Choose delay display based on toggle
+    const showAI = aiToggle.checked;
+    const delaySeconds = showAI ? aiDelay : trafficDelayInSeconds;
+
+    // Format travel time with and without delay
+    const normalTime = travelTimeInSeconds - trafficDelayInSeconds;
+    const delayedTime = travelTimeInSeconds;
+
+    const delayClass = delaySeconds < 180 ? 'low' : delaySeconds < 420 ? 'moderate' : 'high';
+
+    infoBox.innerHTML = `
+      <div class="route-summary fastest" style="border-left-color: ${route.color};">
+        <strong>${route.label}</strong>
+        <div>Distance: ${(lengthInMeters / 1000).toFixed(1)} km</div>
+        <div>Travel Time (No Delay): ${formatTime(normalTime)}</div>
+        <div>Travel Time (With Delay): ${formatTime(delayedTime)}</div>
+        <div class="${delayClass}" style="margin-top:8px;">
+          Traffic Delay: <strong>${formatTime(delaySeconds)}</strong>
+        </div>
+      </div>
+      <small style="color:#555;">
+        Showing ${showAI ? 'AI Predicted Delay' : 'Real-Time Delay from TomTom API'} (Toggle above)
+      </small>
+    `;
+    infoBox.appendChild(delayGaugeBar.parentElement);
+
+    updateDelayGauge(delaySeconds);
+  }
+
+  aiToggle.addEventListener('change', () => {
+    if (currentRouteKey) {
+      const selectedRoute = routeSummaries.find(r => r.key === currentRouteKey);
+      showRouteInfo(selectedRoute);
+    }
+  });
+
+  loadRoutes();
+</script>
+</body>
+</html>
