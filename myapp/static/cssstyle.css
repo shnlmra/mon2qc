@@ -1,0 +1,153 @@
+
+ 
+ body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 15px;
+    background: #f9f9f9;
+    color: #333;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #004080;
+  }
+
+  /* Container to hold both routes side by side */
+  .routes-wrapper {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: nowrap; /* force side by side */
+  }
+
+  /* Each route container */
+  .route {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,115,230,0.1);
+    flex: 1 1 45%;
+    max-width: 600px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Route header line - clickable */
+  .route-header {
+    cursor: pointer;
+    background-color:rgb(2, 65, 26);
+    color: white;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 18px;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px 6px 0 0;
+  }
+
+  /* Arrow icon for toggle */
+  .route-header .arrow {
+    transition: transform 0.3s ease;
+  }
+  .route-header.collapsed .arrow {
+    transform: rotate(-90deg);
+  }
+
+  /* Collapsible content */
+  .route-content {
+    padding: 20px 30px 30px 50px;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  /* Hide route content initially */
+  .route-content.collapsed {
+    max-height: 0;
+    padding: 0 30px;
+    opacity: 0;
+  }
+
+  /* Show route content expanded */
+  .route-content.expanded {
+    max-height: 2000px; /* big enough to fit content */
+    opacity: 1;
+    padding-top: 20px;
+    padding-bottom: 30px;
+  }
+
+  /* Stop styling */
+  .stop {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 20px;
+  }
+  .stop::before {
+    content: "";
+    position: absolute;
+    left: -40px;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    background-color: #0073e6;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 6px rgba(0,115,230,0.6);
+  }
+  .stop h4 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    color: #004080;
+  }
+  .upcoming {
+    font-style: italic;
+    color: #777;
+    margin-top: 6px;
+  }
+  ul.arrivals {
+    margin: 5px 0 0 20px;
+    padding-left: 0;
+    list-style-type: disc;
+    color: #0059b3;
+  }
+  ul.arrivals li {
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .fare {
+    margin-top: 8px;
+    font-weight: bold;
+    color: #cc3300;
+  }
+
+  /* Vertical timeline line for each route */
+  .route-content::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 60px;
+    bottom: 30px;
+    width: 4px;
+    background-color: #0073e6;
+    border-radius: 2px;
+  }
+
+  /* Fix vertical line to route container relative */
+  .route {
+    position: relative;
+  }
+
+  /* Responsive: stack routes vertically on small screen */
+  @media (max-width: 800px) {
+    .routes-wrapper {
+      flex-direction: column;
+      gap: 30px;
+    }
+    .route {
+      max-width: 100%;
+    }
+  }
+

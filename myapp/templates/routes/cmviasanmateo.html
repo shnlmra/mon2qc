@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Via San Mateo Transit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #1a202c;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .controls {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .controls:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .controls label {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #2d3748;
+      margin-right: 15px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .controls input[type="number"] {
+      width: 100px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .controls input[type="number"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .controls button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .controls button:active {
+      transform: translateY(0);
+    }
+
+    .transit-line {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .transit-line:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .transit-line::before {
+      content: '';
+      position: absolute;
+      left: 50px;
+      top: 60px;
+      bottom: 60px;
+      width: 4px;
+      background: linear-gradient(to bottom, #667eea, #764ba2, #667eea);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .stop {
+      display: flex;
+      align-items: center;
+      padding: 20px 20px;
+      position: relative;
+      transition: all 0.3s ease;
+      border-radius: 16px;
+      margin-bottom: 8px;
+    }
+
+    .stop:hover {
+      background: rgba(102, 126, 234, 0.05);
+      transform: translateX(8px);
+    }
+
+    .stop-indicator {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-right: 25px;
+      z-index: 2;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .stop:hover .stop-indicator {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4), 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .stop-content {
+      flex: 1;
+    }
+
+    .stop-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #2d3748;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .fare {
+      color: #718096;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .stop:hover .fare {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .controls {
+        padding: 20px;
+        margin: 0 10px 20px;
+      }
+      
+      .input-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .transit-line {
+        margin: 0 10px;
+        padding: 30px 20px;
+      }
+      
+      .transit-line::before {
+        left: 35px;
+      }
+      
+      .stop {
+        padding: 15px 10px;
+      }
+      
+      .stop-indicator {
+        margin-right: 20px;
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header fade-in">
+      <h1>Via San Mateo Transit</h1>
+      <p>Modern public transportation route planner</p>
+    </div>
+
+    <div class="controls fade-in">
+      <label for="fareIncrease">Apply Fare Increase</label>
+      <p style="margin-bottom: 10px; ">To increase fares, enter a percentage and click "Apply" to update the fare amounts.</p>
+      <div class="input-group">
+      <input type="number" id="fareIncrease" value="10" placeholder="%" />
+      <button onclick="handleFareIncrease()">Update Fares</button>
+    </div>
+
+    </div>
+
+    <div class="transit-line fade-in">
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">Maly, San Mateo Rizal</div>
+          <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">Brgy. Guinayang, San Mateo</div>
+          <div class="fare" data-base="15">Fare from start: ₱16.00</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">Brgy. Malanday, San Mateo</div>
+          <div class="fare" data-base="15">Fare from start: ₱17.00</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">San Mateo Municipal College</div>
+          <div class="fare" data-base="15">Fare from start: ₱17.00</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">SM San Mateo, Rizal</div>
+          <div class="fare" data-base="15">Fare from start: ₱20.00</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-indicator"></div>
+        <div class="stop-content">
+          <div class="stop-name">San Mateo - Batasan Road</div>
+          <div class="fare" data-base="15">Fare from start: ₱20.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Store original fare values on DOM load
+  window.addEventListener('DOMContentLoaded', () => {
+    const fares = document.querySelectorAll('.fare');
+    fares.forEach(fare => {
+      const match = fare.textContent.match(/₱([\d.]+)/);
+      if (match) {
+        fare.setAttribute('data-original', match[1]);
+      }
+    });
+  });
+
+  // Handle fare increase
+  function handleFareIncrease() {
+    const percentage = parseFloat(document.getElementById("fareIncrease").value);
+    if (isNaN(percentage)) {
+      alert("Please enter a valid number.");
+      return;
+    }
+
+    const fares = document.querySelectorAll('.fare');
+    fares.forEach((fare, index) => {
+      setTimeout(() => {
+        const base = parseFloat(fare.getAttribute('data-original'));
+        const increased = base + (base * (percentage / 100));
+
+        fare.style.transform = 'scale(1.1)';
+        fare.style.background = 'rgba(102, 126, 234, 0.2)';
+
+        setTimeout(() => {
+          fare.textContent = `Fare from start: ₱${increased.toFixed(2)}`;
+          fare.style.transform = 'scale(1)';
+          fare.style.background = 'rgba(102, 126, 234, 0.1)';
+        }, 150);
+      }, index * 100);
+    });
+
+    // Show notification after applying increases
+    showNotification(`Fares updated with ${percentage}% increase!`, "success");
+  }
+
+  // Reset fares to original values
+  function resetFares() {
+    const fares = document.querySelectorAll('.fare');
+    fares.forEach((fare, index) => {
+      setTimeout(() => {
+        const base = parseFloat(fare.getAttribute('data-original'));
+
+        fare.style.transform = 'scale(1.1)';
+        fare.style.background = 'rgba(255, 0, 0, 0.1)';
+
+        setTimeout(() => {
+          fare.textContent = `Fare from start: ₱${base.toFixed(2)}`;
+          fare.style.transform = 'scale(1)';
+          fare.style.background = 'rgba(102, 126, 234, 0.1)';
+        }, 150);
+      }, index * 100);
+    });
+  }
+
+  // Notification function
+  function showNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+
+    // Style notification
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      ${type === 'success'
+        ? 'background: linear-gradient(135deg, #28a745, #20c997);'
+        : 'background: linear-gradient(135deg, #dc3545, #e63946);'}
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Animate out and remove
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  // Allow Enter key to trigger fare increase
+  document.getElementById('fareIncrease').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      handleFareIncrease();
+    }
+  });
+
+  // Animate stop names on load
+  window.addEventListener('load', () => {
+    const stops = document.querySelectorAll('.stop');
+    stops.forEach((stop, index) => {
+      stop.style.opacity = '0';
+      stop.style.transform = 'translateY(20px)';
+
+      setTimeout(() => {
+        stop.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        stop.style.opacity = '1';
+        stop.style.transform = 'translateY(0)';
+      }, (index + 1) * 150);
+    });
+  });
+</script>
+
+
+
+</body>
+</html>
