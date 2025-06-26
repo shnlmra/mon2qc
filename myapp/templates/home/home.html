@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon2Qc - Montalban To Quezon City</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .logo-circle {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+            box-shadow: 0 20px 60px rgba(45, 125, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo-circle:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 30px 80px rgba(45, 125, 50, 0.4);
+        }
+
+        .road-design {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            width: 80px;
+            height: 90px;
+        }
+
+        .main-road {
+            width: 50px;
+            height: 65px;
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            transform: rotate(-10deg);
+            box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+        }
+
+        .road-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 10px;
+            background-color: white;
+            border-radius: 1px;
+        }
+
+        .road-line:nth-child(1) { top: 12px; }
+        .road-line:nth-child(2) { top: 28px; }
+        .road-line:nth-child(3) { top: 44px; }
+
+        .side-road {
+            position: absolute;
+            top: 18px;
+            right: 8px;
+            width: 28px;
+            height: 45px;
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            border-radius: 15px;
+            transform: rotate(20deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-title {
+            font-size: clamp(48px, 8vw, 84px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -3px;
+            text-shadow: 0 10px 30px rgba(25, 118, 210, 0.2);
+        }
+
+        .subtitle {
+            font-size: clamp(18px, 3vw, 28px);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navigation-cards {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .nav-card {
+            width: 220px;
+            height: 160px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-card:hover::before {
+            left: 100%;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .nav-card:active {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .icon-container {
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-card:hover .icon-container {
+            transform: scale(1.1);
+        }
+
+        .computer-icon {
+            width: 60px;
+            height: 42px;
+            border: 3px solid #2d7d32;
+            border-radius: 6px;
+            position: relative;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .computer-screen {
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 3px;
+        }
+
+        .computer-stand {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 4px;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 2px;
+        }
+
+        .computer-base {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 42px;
+            height: 4px;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 2px;
+        }
+
+        .traffic-light {
+            width: 30px;
+            height: 70px;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(45, 125, 50, 0.3);
+        }
+
+        .traffic-light-bulb {
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .traffic-light-bulb:nth-child(1) { top: 8px; }
+        .traffic-light-bulb:nth-child(2) { top: 24px; }
+        .traffic-light-bulb:nth-child(3) { top: 40px; }
+
+        .traffic-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(45, 125, 50, 0.6);
+            border-radius: 50%;
+        }
+
+        .routes-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d7d32, #4caf50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(45, 125, 50, 0.3);
+        }
+
+        .routes-icon::before {
+            content: '🗺️';
+            font-size: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d7d32;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-card:hover .card-title {
+            color: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .logo-section {
+                margin-bottom: 60px;
+            }
+            
+            .navigation-cards {
+                gap: 20px;
+            }
+            
+            .nav-card {
+                width: 180px;
+                height: 140px;
+            }
+            
+            .main-title {
+                letter-spacing: -2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navigation-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <div class="road-design">
+                        <div class="main-road">
+                            <div class="road-line"></div>
+                            <div class="road-line"></div>
+                            <div class="road-line"></div>
+                        </div>
+                        <div class="side-road"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-title">Mon2Qc</div>
+            <div class="subtitle">Montalban To Quezon City</div>
+        </div>
+        
+        <!-- Navigation Cards -->
+        <div class="navigation-cards">
+            <!-- View Terminal Card -->
+
+            <div class="nav-card">
+                <div class="icon-container">
+                    <div class="computer-icon">
+                        <div class="computer-screen"></div>
+                        <div class="computer-stand"></div>
+                        <div class="computer-base"></div>
+                    </div>
+                </div>
+                <div class="card-title">
+                    <a href="{% url 'terminal' %}" style="text-decoration: none; color: inherit;">
+                      View Terminal
+                    </a>
+                </div>
+            </div>
+
+            
+            <!-- Traffic Card -->
+            <div class="nav-card">
+                <div class="icon-container">
+                    <div class="traffic-light">
+                        <div class="traffic-light-bulb"></div>
+                        <div class="traffic-light-bulb"></div>
+                        <div class="traffic-light-bulb"></div>
+                    </div>
+                </div>
+                <div class="card-title">
+                    <a href="{% url 'traffic' %}" style="text-decoration: none; color: inherit;">
+                        Traffic
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Routes Card -->
+            <div class="nav-card">
+                <div class="icon-container">
+                    <div class="routes-icon"></div>
+                </div>
+                <div class="card-title">
+                    <a href="{% url 'routes' %}" style="text-decoration: none; color: inherit;">
+                        Routes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/685a3fc257340a190e6c7a31/1iug8i3v9';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+
+
+</body>
+</html>

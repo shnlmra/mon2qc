@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Traffic Map - Montalban Routes</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .main-title {
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .controls-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        #route-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #route-buttons button {
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #route-buttons button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        #route-buttons button:hover::before {
+            left: 100%;
+        }
+
+        #route-buttons button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        #route-buttons button.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #toggle-ai {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        #toggle-ai label {
+            font-weight: 600;
+            color: #2d3748;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #ai-toggle:checked + .toggle-switch {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        #ai-toggle:checked + .toggle-switch::before {
+            transform: translateX(26px);
+        }
+
+        #ai-toggle {
+            display: none;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #map:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        #legend {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+        }
+
+        #legend strong {
+            display: block;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        #legend span {
+            font-weight: 600;
+            margin: 0 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        #legend .low {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        #legend .moderate {
+            background: rgba(255, 174, 66, 0.2);
+            color: #ff8c00;
+        }
+
+        #legend .high {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .route-summary {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-summary::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .route-summary.fastest {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .route-summary:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(5px);
+        }
+
+        .route-summary strong {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #2d3748;
+        }
+
+        .route-summary div {
+            margin: 8px 0;
+            font-size: 15px;
+            color: #4a5568;
+        }
+
+        .delay-info {
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .delay-info.low {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .delay-info.moderate {
+            background: rgba(255, 174, 66, 0.2);
+            color: #ff8c00;
+        }
+
+        .delay-info.high {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        #delay-gauge {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #delay-gauge-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        #delay-gauge-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .loading-message {
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .controls-section,
+            .map-container,
+            .info-box {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            #route-buttons {
+                gap: 8px;
+            }
+
+            #route-buttons button {
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            .route-summary strong {
+                font-size: 18px;
+            }
+
+            #legend span {
+                margin: 5px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #route-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #route-buttons button {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            #toggle-ai {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Traffic Route Monitor</h1>
+            <p class="subtitle">Real-time traffic analysis from Montalban</p>
+        </div>
+
+        <div class="controls-section">
+            <div id="route-buttons">
+            </div>
+
+            <div id="toggle-ai">
+                <label for="ai-toggle">Show AI Predicted Delay</label>
+                <input type="checkbox" id="ai-toggle" />
+                <div class="toggle-switch"></div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="legend">
+                <strong>Traffic Delay Indicator</strong>
+                <span class="low">● Low Delay</span>
+                <span class="moderate">● Moderate Delay</span>
+                <span class="high">● High Delay</span>
+            </div>
+            
+            <div id="map"></div>
+        </div>
+
+        <div class="info-box" id="route-info">
+            <div class="loading-message">
+                <div class="spinner"></div>
+                Loading route information...
+            </div>
+            <div id="delay-gauge">
+                <div id="delay-gauge-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "lxPgf6GPTpSWaAO9RiYCZB8egvxGmVWj";
+
+        const routes = {
+            litex: {
+                start: [14.7471, 121.1631],
+                end: [14.7353, 121.1544],
+                label: "Montalban → Litex",
+                color: "#667eea",
+            },
+            cubao: {
+                start: [14.7471, 121.1631],
+                end: [14.6091, 121.0509],
+                label: "Montalban → Cubao",
+                color: "#ff8c00",
+            },
+            smnorth: {
+                start: [14.7471, 121.1631],
+                end: [14.6559, 121.0314],
+                label: "Montalban → SM North EDSA",
+                color: "#764ba2",
+            },
+            litex_via_sanmateo: {
+                start: [14.7471, 121.1631],
+                via: [14.6937, 121.1175],
+                end: [14.7353, 121.1544],
+                label: "Montalban → Litex via San Mateo",
+                color: "#28a745"
+            },
+            quezonave: {
+                start: [14.7471, 121.1631],
+                end: [14.6298, 121.0337],
+                label: "Montalban → Quezon Ave",
+                color: "#dc3545"
+            },
+            circle: {
+                start: [14.7471, 121.1631],
+                end: [14.6507, 121.0497],
+                label: "Montalban → Circle",
+                color: "#6f42c1"
+            },
+            trinoma: {
+                start: [14.7471, 121.1631],
+                end: [14.6556, 121.0364],
+                label: "Montalban → Trinoma",
+                color: "#20c997"
+            }
+        };
+
+        const map = L.map('map').setView(routes.litex.start, 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${min}m ${sec}s`;
+        }
+
+        async function fetchRoute(start, end, via = null) {
+            const startStr = `${start[0]},${start[1]}`;
+            const endStr = `${end[0]},${end[1]}`;
+            let url = `https://api.tomtom.com/routing/1/calculateRoute/${startStr}:${endStr}/json?key=${apiKey}&traffic=true`;
+
+            if (via) {
+                const viaStr = `${via[0]},${via[1]}`;
+                url = `https://api.tomtom.com/routing/1/calculateRoute/${startStr}:${viaStr}:${endStr}/json?key=${apiKey}&traffic=true`;
+            }
+
+            const response = await fetch(url);
+            return await response.json();
+        }
+
+        function predictTrafficDelayAI(routeKey, currentHour) {
+            let baseDelay = 0;
+            if (currentHour >= 7 && currentHour <= 9) baseDelay = 300;
+            else if (currentHour >= 17 && currentHour <= 19) baseDelay = 400;
+            else baseDelay = 100;
+
+            const routeMultipliers = {
+                litex: 1.0,
+                cubao: 1.3,
+                smnorth: 1.1,
+                litex_via_sanmateo: 1.4,
+                quezonave: 1.35,
+                circle: 1.25,
+                trinoma: 1.2
+            };
+
+            return Math.floor(baseDelay * (routeMultipliers[routeKey] || 1));
+        }
+
+        const infoBox = document.getElementById('route-info');
+        const aiToggle = document.getElementById('ai-toggle');
+        const routeButtonsContainer = document.getElementById('route-buttons');
+        
+
+        let routeLayers = {};
+        let currentRouteKey = null;
+        let routeSummaries = [];
+
+        Object.keys(routes).forEach(routeKey => {
+            const btn = document.createElement('button');
+            btn.textContent = routes[routeKey].label;
+            btn.dataset.routeKey = routeKey;
+            btn.addEventListener('click', () => {
+                highlightRoute(routeKey);
+            });
+            routeButtonsContainer.appendChild(btn);
+        });
+
+        function setActiveButton(routeKey) {
+            const buttons = routeButtonsContainer.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.routeKey === routeKey);
+            });
+        }
+
+        function updateDelayGauge(delaySeconds) {
+            // Get the current delay gauge bar (it might be recreated)
+            const delayGaugeBar = document.getElementById('delay-gauge-bar');
+            if (!delayGaugeBar) return;
+
+            let percent = Math.min(100, (delaySeconds / 600) * 100);
+            delayGaugeBar.style.width = percent + '%';
+
+            if (percent < 33) {
+                delayGaugeBar.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+            } else if (percent < 66) {
+                delayGaugeBar.style.background = 'linear-gradient(90deg, #ffae42, #ffc107)';
+            } else {
+                delayGaugeBar.style.background = 'linear-gradient(90deg, #dc3545, #e63946)';
+            }
+        }
+
+        async function loadRoutes() {
+            infoBox.innerHTML = `
+                <div class="loading-message">
+                    <div class="spinner"></div>
+                    Loading route information...
+                </div>
+                <div id="delay-gauge">
+                    <div id="delay-gauge-bar"></div>
+                </div>
+            `;
+
+            for (const key of Object.keys(routes)) {
+                const route = routes[key];
+                try {
+                    const data = await fetchRoute(route.start, route.end, route.via);
+
+                    if (data.routes && data.routes.length > 0) {
+                        const summary = data.routes[0].summary;
+                        routeSummaries.push({
+                            key,
+                            label: route.label,
+                            color: route.color,
+                            summary,
+                            polyline: data.routes[0].legs[0].points
+                        });
+                    } else {
+                        console.error(`No route data for ${key}`);
+                    }
+                } catch (err) {
+                    console.error(`Error fetching route ${key}:`, err);
+                }
+            }
+
+            routeSummaries.sort((a,b) => a.summary.travelTimeInSeconds - b.summary.travelTimeInSeconds);
+
+            if (routeSummaries.length) {
+                highlightRoute(routeSummaries[0].key);
+            } else {
+                infoBox.innerHTML = `
+                    <div class="loading-message">Failed to load route data.</div>
+                    <div id="delay-gauge">
+                        <div id="delay-gauge-bar"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearRouteLayers() {
+            Object.values(routeLayers).forEach(layer => {
+                map.removeLayer(layer);
+            });
+            routeLayers = {};
+        }
+
+        function highlightRoute(routeKey) {
+            setActiveButton(routeKey);
+            clearRouteLayers();
+
+            const selectedRoute = routeSummaries.find(r => r.key === routeKey);
+            if (!selectedRoute) return;
+
+            currentRouteKey = routeKey;
+
+            const latlngs = selectedRoute.polyline.map(p => [p.latitude, p.longitude]);
+            const polyline = L.polyline(latlngs, {
+                color: selectedRoute.color,
+                weight: 6,
+                opacity: 0.9,
+                dashArray: null,
+            }).addTo(map);
+
+            routeSummaries.forEach(route => {
+                if (route.key !== routeKey) {
+                    const latlngsOther = route.polyline.map(p => [p.latitude, p.longitude]);
+                    const polylineOther = L.polyline(latlngsOther, {
+                        color: route.color,
+                        weight: 3,
+                        opacity: 0.3,
+                        dashArray: '8 12',
+                    }).addTo(map);
+                    routeLayers[route.key + "_other"] = polylineOther;
+                }
+            });
+
+            routeLayers[routeKey] = polyline;
+
+            const bounds = polyline.getBounds();
+            map.fitBounds(bounds, {padding: [60, 60]});
+
+            showRouteInfo(selectedRoute);
+        }
+
+        function showRouteInfo(route) {
+            const { travelTimeInSeconds, trafficDelayInSeconds, lengthInMeters } = route.summary;
+
+            const currentHour = new Date().getHours();
+            const aiDelay = predictTrafficDelayAI(route.key, currentHour);
+
+            const showAI = aiToggle.checked;
+            const delaySeconds = showAI ? aiDelay : trafficDelayInSeconds;
+
+            const normalTime = travelTimeInSeconds - trafficDelayInSeconds;
+            const delayedTime = travelTimeInSeconds;
+
+            const delayClass = delaySeconds < 180 ? 'low' : delaySeconds < 420 ? 'moderate' : 'high';
+
+            infoBox.innerHTML = `
+                <div class="route-summary fastest">
+                    <strong>${route.label}</strong>
+                    <div><strong>Distance:</strong> ${(lengthInMeters / 1000).toFixed(1)} km</div>
+                    <div><strong>Travel Time (No Delay):</strong> ${formatTime(normalTime)}</div>
+                    <div><strong>Travel Time (With Delay):</strong> ${formatTime(delayedTime)}</div>
+                    <div class="delay-info ${delayClass}">
+                        Traffic Delay: ${formatTime(delaySeconds)}
+                    </div>
+                </div>
+                <div style="color:#6c757d; font-size: 14px; text-align: center; margin-top: 15px;">
+                    Showing ${showAI ? 'AI Predicted Delay' : 'Real-Time Delay from TomTom API'}
+                </div>
+                <div id="delay-gauge" style="margin-top: 20px;">
+                    <div id="delay-gauge-bar"></div>
+                </div>
+            `;
+
+            // Update the gauge after the HTML is inserted
+            setTimeout(() => {
+                updateDelayGauge(delaySeconds);
+            }, 100);
+        }
+
+        aiToggle.addEventListener('change', () => {
+            if (currentRouteKey) {
+                const selectedRoute = routeSummaries.find(r => r.key === currentRouteKey);
+                if (selectedRoute) {
+                    showRouteInfo(selectedRoute);
+                }
+            }
+        });
+
+        // Make the toggle switch clickable
+        document.querySelector('.toggle-switch').addEventListener('click', () => {
+            aiToggle.checked = !aiToggle.checked;
+            aiToggle.dispatchEvent(new Event('change'));
+        });
+
+        // Also make the label clickable
+        document.querySelector('#toggle-ai label').addEventListener('click', () => {
+            aiToggle.checked = !aiToggle.checked;
+            aiToggle.dispatchEvent(new Event('change'));
+        });
+
+        loadRoutes();
+    </script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Via San Mateo Transit Route</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .main-title {
+            font-size: clamp(24px, 5vw, 36px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            transition: all 0.3s ease;
+        }
+
+        .controls:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .controls label {
+            font-weight: 600;
+            font-size: 16px;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .controls input[type="number"] {
+            width: 80px;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .controls input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.05);
+        }
+
+        .controls button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .controls button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .controls button:hover::before {
+            left: 100%;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .transit-line {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .transit-line:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .transit-line::before {
+            content: '';
+            position: absolute;
+            left: 40px;
+            top: 60px;
+            bottom: 60px;
+            width: 3px;
+            background: linear-gradient(to bottom, #667eea, #764ba2, #667eea);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .stop {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stop:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(8px);
+        }
+
+        .stop-indicator {
+            width: 14px;
+            height: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+            z-index: 2;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .stop:hover .stop-indicator {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stop-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stop-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2d3748;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            transition: all 0.3s ease;
+        }
+
+        .stop:hover .stop-name {
+            color: #667eea;
+        }
+
+        .fare {
+            color: #4a5568;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 8px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .stop:hover .fare {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .reset-button {
+            margin-left: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #dc3545, #e63946);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reset-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .reset-button:hover::before {
+            left: 100%;
+        }
+
+        .reset-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .fare-updated {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .controls {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .controls input[type="number"],
+            .controls button,
+            .reset-button {
+                width: 100%;
+                max-width: 180px;
+            }
+
+            .transit-line {
+                padding: 25px 20px;
+            }
+
+            .transit-line::before {
+                left: 30px;
+            }
+
+            .stop {
+                padding: 10px 12px;
+            }
+
+            .stop-indicator {
+                margin-right: 15px;
+                width: 12px;
+                height: 12px;
+            }
+
+            .stop-name {
+                font-size: 13px;
+            }
+
+            .fare {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .controls label {
+                font-size: 14px;
+            }
+
+            .stop-name {
+                font-size: 12px;
+            }
+
+            .fare {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Via San Mateo</h1>
+            <p class="subtitle">Transit Route & Fare Calculator</p>
+        </div>
+
+        <div class="controls">
+            <label for="fareIncrease">Apply Fare Increase</label>
+                  <p style="margin-bottom: 10px; ">To increase fares, enter a percentage and click "Apply" to update the fare amounts.</p>
+            <div class="input-group">
+                <input type="number" id="fareIncrease" value="10" placeholder="%" min="0" max="100" />
+                <button onclick="handleFareIncrease()">Update Fares</button>
+            </div>
+        </div>
+
+        <div class="transit-line">
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Montalban Highway</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Brgy. Guinayang, San Mateo</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Brgy. Malanday, San Mateo</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">San Mateo Municipal College</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">SM San Mateo, Rizal</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Cross to Marikina via San Mateo Bridge</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Marikina River Park Area</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Marikina Heights</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Marikina Riverbanks Mall</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Sumulong Highway (towards Antipolo)</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Cross into Quezon City via Katipunan Avenue</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Commonwealth Avenue</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Philcoa / Quezon Memorial Circle</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Quezon Avenue MRT Station</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">EDSA-Kamuning</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">EDSA-Cubao (Farmers Plaza / Araneta Center)</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+
+            <div class="stop">
+                <div class="stop-indicator"></div>
+                <div class="stop-content">
+                    <div class="stop-name">Cubao – Alimall (Final Stop)</div>
+                    <div class="fare" data-base="15">Fare from start: ₱15.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store original fare values on DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            const fares = document.querySelectorAll('.fare');
+            fares.forEach(fare => {
+                const match = fare.textContent.match(/₱([\d.]+)/);
+                if (match) {
+                    fare.setAttribute('data-original', match[1]);
+                }
+            });
+        });
+
+        // Handle fare increase
+        function handleFareIncrease() {
+            const percentage = parseFloat(document.getElementById("fareIncrease").value);
+            if (isNaN(percentage) || percentage < 0) {
+                showNotification("Please enter a valid positive number.", "error");
+                return;
+            }
+
+            const fares = document.querySelectorAll('.fare');
+            fares.forEach((fare, index) => {
+                setTimeout(() => {
+                    const base = parseFloat(fare.getAttribute('data-original'));
+                    const increased = base + (base * (percentage / 100));
+
+                    fare.style.transform = 'scale(1.1)';
+                    fare.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2))';
+
+                    setTimeout(() => {
+                        fare.textContent = `Fare from start: ₱${increased.toFixed(2)}`;
+                        fare.style.transform = 'scale(1)';
+                        fare.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))';
+                    }, 150);
+                }, index * 50);
+            });
+
+            showNotification(`Fares updated with ${percentage}% increase!`, "success");
+        }
+
+        // Reset fares to original values
+        function resetFares() {
+            const fares = document.querySelectorAll('.fare');
+            fares.forEach((fare, index) => {
+                setTimeout(() => {
+                    const base = parseFloat(fare.getAttribute('data-original'));
+
+                    fare.style.transform = 'scale(1.1)';
+                    fare.style.background = 'linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(230, 57, 70, 0.2))';
+
+                    setTimeout(() => {
+                        fare.textContent = `Fare from start: ₱${base.toFixed(2)}`;
+                        fare.style.transform = 'scale(1)';
+                        fare.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))';
+                    }, 150);
+                }, index * 50);
+            });
+
+            document.getElementById("fareIncrease").value = "0";
+            showNotification("Fares reset to original values!", "success");
+        }
+
+        // Notification function
+        function showNotification(message, type) {
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                font-size: 12px;
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                ${type === 'success'
+                    ? 'background: linear-gradient(135deg, #28a745, #20c997);'
+                    : 'background: linear-gradient(135deg, #dc3545, #e63946);'}
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Allow Enter key to trigger fare increase
+        document.getElementById('fareIncrease').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleFareIncrease();
+            }
+        });
+
+        // Animate stops on load
+        window.addEventListener('load', () => {
+            const stops = document.querySelectorAll('.stop');
+            stops.forEach((stop, index) => {
+                stop.style.opacity = '0';
+                stop.style.transform = 'translateY(15px)';
+
+                setTimeout(() => {
+                    stop.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    stop.style.opacity = '1';
+                    stop.style.transform = 'translateY(0)';
+                }, (index + 1) * 80);
+            });
+        });
+    </script>
+</body>
+</html>

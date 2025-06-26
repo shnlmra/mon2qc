@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Mon2Qc - Routes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 25%, #a855f7 50%, #c084fc 75%, #7c3aed 100%);
+      background-attachment: fixed;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Logo Section */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .logo-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-circle {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 50%;
+      position: relative;
+      display: inline-block;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .logo-circle:hover {
+      transform: translateY(-5px);
+    }
+
+    .road-design {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      width: 70px;
+      height: 80px;
+    }
+
+    .main-road {
+      width: 45px;
+      height: 60px;
+      background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+      border-radius: 0 0 25px 25px;
+      position: relative;
+      transform: rotate(-10deg);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .road-line {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 8px;
+      background-color: white;
+      border-radius: 1px;
+    }
+
+    .road-line:nth-child(1) { top: 10px; }
+    .road-line:nth-child(2) { top: 25px; }
+    .road-line:nth-child(3) { top: 40px; }
+
+    .side-road {
+      position: absolute;
+      top: 15px;
+      right: 5px;
+      width: 25px;
+      height: 40px;
+      background-color: white;
+      border-radius: 15px;
+      transform: rotate(20deg);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 0.5rem;
+      letter-spacing: -2px;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Routes Title */
+    .routes-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Route Buttons Grid */
+    .routes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .route-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      height: 120px;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .route-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .route-button:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #15803d, #16a34a);
+    }
+
+    .route-button:hover::before {
+      left: 100%;
+    }
+
+    .route-button:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    /* Collapsible Routes Section */
+    .routes-wrapper {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+
+    .route {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      flex: 1 1 45%;
+      max-width: 600px;
+      position: relative;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .route-header {
+      cursor: pointer;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: white;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 16px 16px 0 0;
+      transition: all 0.3s ease;
+    }
+
+    .route-header:hover {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+    }
+
+    .arrow {
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .route-header.collapsed .arrow {
+      transform: rotate(-90deg);
+    }
+
+    .route-content {
+      padding: 1.5rem 2rem 2rem 3rem;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .route-content.collapsed {
+      max-height: 0;
+      padding: 0 2rem;
+      opacity: 0;
+    }
+
+    .route-content.expanded {
+      max-height: 2000px;
+      opacity: 1;
+    }
+
+    .route-content::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 2rem;
+      bottom: 2rem;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+      border-radius: 2px;
+    }
+
+    .stop {
+      position: relative;
+      margin-bottom: 2rem;
+      padding-left: 1.5rem;
+    }
+
+    .stop::before {
+      content: "";
+      position: absolute;
+      left: -2.5rem;
+      top: 8px;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+    }
+
+    .stop h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .upcoming {
+      font-style: italic;
+      color: #6b7280;
+      margin-top: 0.5rem;
+    }
+
+    .arrivals {
+      margin: 0.5rem 0 0 1.5rem;
+      padding-left: 0;
+      list-style-type: disc;
+      color: #1d4ed8;
+    }
+
+    .arrivals li {
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    .fare {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: #dc2626;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .main-title {
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+      }
+
+      .routes-title {
+        font-size: 2rem;
+      }
+
+      .routes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .route-button {
+        height: 100px;
+        font-size: 1rem;
+      }
+
+      .routes-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .route {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-circle {
+        width: 100px;
+        height: 100px;
+      }
+
+      .main-title {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+
+      .route-button {
+        height: 80px;
+        font-size: 0.9rem;
+        padding: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-container">
+        <div class="logo-circle">
+          <div class="road-design">
+            <div class="main-road">
+              <div class="road-line"></div>
+              <div class="road-line"></div>
+              <div class="road-line"></div>
+            </div>
+            <div class="side-road"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="main-title">Mon2Qc</div>
+      <div class="subtitle">Montalban To Quezon City</div>
+    </div>
+
+    <h2 class="routes-title">Routes</h2>
+
+    <!-- Route Buttons Grid -->
+    <div class="routes-grid">
+      <a href="/ibp" class="route-button">
+        Montalban Highway - Commonwealth Ave.
+      </a>
+
+      <a href="/cmviasanmateo" class="route-button">
+        Montalban Highway - Commonwealth Ave. via San Mateo
+      </a>
+
+      <a href="/aurora" class="route-button">
+        Montalban Highway - Cubao, Quezon City
+      </a>
+
+      <a href="/smnorth" class="route-button">
+        Montalban Highway - SM North EDSA via. Commonwealth Ave
+      </a>
+
+      <a href="/smnorthviasanmateo" class="route-button">
+        Montalban Highway - SM North EDSA via. San Mateo
+      </a>
+
+      <a href="/qave" class="route-button">
+        Montalban Highway - Quezon Ave.
+      </a>
+    </div>
+
+    <!-- Collapsible Routes Section (for future expansion) -->
+    <div class="routes-wrapper">
+      <!-- Route sections can be added here with the toggle functionality -->
+    </div>
+  </div>
+
+  <script>
+    function toggleRoute(routeId) {
+      const route = document.getElementById(routeId);
+      const header = route.querySelector('.route-header');
+      const content = route.querySelector('.route-content');
+
+      const isCollapsed = content.classList.contains('collapsed');
+
+      if (isCollapsed) {
+        content.classList.remove('collapsed');
+        content.classList.add('expanded');
+        header.classList.remove('collapsed');
+        header.classList.add('expanded');
+        header.querySelector('.arrow').textContent = '▼';
+      } else {
+        content.classList.add('collapsed');
+        content.classList.remove('expanded');
+        header.classList.add('collapsed');
+        header.classList.remove('expanded');
+        header.querySelector('.arrow').textContent = '▶';
+      }
+    }
+
+    // Add smooth scrolling for better UX
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Add loading animation
+    window.addEventListener('load', function() {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.5s ease';
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+  </script>
+</body>
+</html>
